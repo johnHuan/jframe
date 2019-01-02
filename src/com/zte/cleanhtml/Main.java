@@ -53,11 +53,7 @@ public class Main extends JFrame {
                 // TODO 执行扫描操作
                 File file = new File(list.get(1));
                 Thread t = new Thread(() -> {
-                    try {
                         handleFile(file);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
                 });
                 t.start();
             }
@@ -66,19 +62,36 @@ public class Main extends JFrame {
 
 
     // 递归读取路径下的文件
-    private void handleFile(File file) throws IOException {
+    private void handleFile(File file) {
         if (file != null && file.isFile()) {
-//            if (file.getName().endsWith(".html") || file.getName().endsWith(".html")) {
+            if (file.getName().endsWith(".html") || file.getName().endsWith(".htm")) {
                 // 文件
                 Long fileLength = file.length();
                 byte[] fileContent = new byte[fileLength.intValue()];
-                FileInputStream inputStream = new FileInputStream(file);
-                int read = inputStream.read(fileContent);
-                inputStream.close();
-                String s = new String(fileContent, "UTF-8");
+                FileInputStream inputStream = null;
+                try {
+                    inputStream = new FileInputStream(file);
+                    int read = inputStream.read(fileContent);
+                    inputStream.close();
+                    String s = null;
+                    s = new String(fileContent, "UTF-8");
+                    String pattern = "<SCRIPT Language=VBScript><!--";
+                    if (s.contains(pattern)) {
+                        String destContent = s.substring(0, s.indexOf(pattern));
+                        PrintStream printStream = null;
+                        try {
+                            printStream = new PrintStream(new FileOutputStream(file));
+                            printStream.print(destContent);
+                        } catch (FileNotFoundException e) {
+                            System.out.println("文件写入错误");
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("文件处理出错");
+                }
                 textArea.append(file.getAbsoluteFile() + "\n");
                 textArea.setCaretPosition(textArea.getDocument().getLength());
-//            }
+            }
         } else if (file != null && file.isDirectory()) {
             // 路径
             File[] files = file.listFiles();
