@@ -1,8 +1,10 @@
-package com.zte.cleanhtml;
+package cn.edu.whu;
+
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +55,7 @@ public class Main extends JFrame {
                 // TODO 执行扫描操作
                 File file = new File(list.get(1));
                 Thread t = new Thread(() -> {
-                        handleFile(file);
+                    handleFile(file);
                 });
                 t.start();
             }
